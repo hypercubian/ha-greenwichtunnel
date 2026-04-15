@@ -33,9 +33,7 @@ class GreenwichTunnelConfigFlow(ConfigFlow, domain=DOMAIN):
             try:
                 await client.async_get_recent_reports(hours=1)
             except GreenwichLiftsApiError as err:
-                _LOGGER.warning(
-                    "Greenwich Foot Tunnel Lifts: connection test failed: %s", err
-                )
+                _LOGGER.warning("Greenwich Foot Tunnel Lifts: connection test failed: %s", err)
                 errors["base"] = "cannot_connect"
             else:
                 return self.async_create_entry(

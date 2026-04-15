@@ -91,8 +91,6 @@ class GreenwichLiftsApiClient:
             raise GreenwichLiftsApiError("Request timed out") from err
 
         if not isinstance(data, list):
-            raise GreenwichLiftsApiError(
-                f"Unexpected response shape: {type(data).__name__}"
-            )
+            raise GreenwichLiftsApiError(f"Unexpected response shape: {type(data).__name__}")
 
         return [Report.from_row(row) for row in data]

@@ -50,8 +50,7 @@ async def async_setup_entry(
     """Register one binary sensor per lift location."""
     coordinator = entry.runtime_data
     async_add_entities(
-        GreenwichTunnelLiftBinarySensor(coordinator, description)
-        for description in SENSORS
+        GreenwichTunnelLiftBinarySensor(coordinator, description) for description in SENSORS
     )
 
 
@@ -96,13 +95,9 @@ class GreenwichTunnelLiftBinarySensor(GreenwichTunnelEntity, BinarySensorEntity)
         if state is None:
             return {}
         return {
-            "last_report_at": (
-                state.last_report_at.isoformat() if state.last_report_at else None
-            ),
+            "last_report_at": (state.last_report_at.isoformat() if state.last_report_at else None),
             "last_report_created": (
-                state.last_report_created.isoformat()
-                if state.last_report_created
-                else None
+                state.last_report_created.isoformat() if state.last_report_created else None
             ),
             "report_count_24h": state.report_count_24h,
             "availability_pct_24h": state.availability_pct_24h,

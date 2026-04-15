@@ -7,13 +7,13 @@ from datetime import datetime, timedelta, timezone
 import pytest
 
 from custom_components.greenwich_tunnel.api import Report
-from custom_components.greenwich_tunnel.coordinator import _aggregate
 from custom_components.greenwich_tunnel.const import (
     LOCATION_NORTH,
     LOCATION_SOUTH,
     STATUS_BROKEN,
     STATUS_FUNCTIONING,
 )
+from custom_components.greenwich_tunnel.coordinator import _aggregate
 
 pytestmark = pytest.mark.unit
 

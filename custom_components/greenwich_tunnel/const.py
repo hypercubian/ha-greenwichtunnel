@@ -12,7 +12,9 @@ REPORTS_ENDPOINT: Final = f"{SUPABASE_URL}/rest/v1/reports"
 # Public Supabase "anon" JWT embedded in the upstream frontend. It grants only the
 # row-level-security-filtered access that greenwichlifts.co.uk already exposes to
 # any browser visiting the site, so it is safe to ship in source.
-SUPABASE_ANON_KEY: Final = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVoZ2ZnYXl5ZmJ0amx0dGVzY3Z2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM3MzIwNzQsImV4cCI6MjA2OTMwODA3NH0.6XVgmEN_BrLiohfvr4a-m8-Svsf_4HyiEcRNaknolM4"  # noqa: E501  pragma: allowlist secret
+SUPABASE_ANON_KEY: Final = (
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVoZ2ZnYXl5ZmJ0amx0dGVzY3Z2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM3MzIwNzQsImV4cCI6MjA2OTMwODA3NH0.6XVgmEN_BrLiohfvr4a-m8-Svsf_4HyiEcRNaknolM4"  # noqa: E501  pragma: allowlist secret
+)
 
 POLL_INTERVAL_SECONDS: Final = 300
 STALE_THRESHOLD_HOURS: Final = 6

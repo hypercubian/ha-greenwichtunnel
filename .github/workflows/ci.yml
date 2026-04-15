@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: "3.13"
+
+jobs:
+  ci:
+    name: Lint, type-check, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Configure Poetry
+        run: poetry config virtualenvs.in-project true
+
+      - name: Cache venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-py${{ env.PYTHON_VERSION }}-${{ hashFiles('poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Black
+        run: poetry run black --check custom_components/ tests/
+
+      - name: isort
+        run: poetry run isort --check-only custom_components/ tests/
+
+      - name: flake8
+        run: poetry run flake8 custom_components/ tests/
+             --max-line-length=100
+             --max-complexity=15
+             --extend-ignore=E203,W503,D100,D104,D107
+             --docstring-convention=google
+
+      - name: mypy
+        run: poetry run mypy --config-file pyproject.toml custom_components/
+
+      - name: pytest
+        run: poetry run pytest tests/unit/ -v
