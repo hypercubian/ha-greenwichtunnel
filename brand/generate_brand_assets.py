@@ -16,7 +16,8 @@ TEAL = (15, 118, 110, 255)        # tailwind tunnel-700, matches greenwichlifts.
 WHITE = (255, 255, 255, 255)
 SHADOW = (0, 0, 0, 40)
 
-BRAND_DIR = Path(__file__).parent
+REPO_ROOT = Path(__file__).parent.parent
+BRAND_DIR = REPO_ROOT / "custom_components" / "greenwich_tunnel" / "brand"
 
 
 def _rounded_background(size: int) -> Image.Image:

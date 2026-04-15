@@ -6,8 +6,8 @@ rules:
     status: done
     comment: 5 minute poll interval for crowdsourced cloud data; well above the 60s cloud floor.
   brands:
-    status: todo
-    comment: Brand icon still to be submitted to home-assistant/brands.
+    status: done
+    comment: Icons embedded directly under custom_components/greenwich_tunnel/brand/ per the HA 2026.3 Brands Proxy API; no home-assistant/brands PR required.
   common-modules:
     status: done
     comment: Uses coordinator.py and entity.py shared modules.
