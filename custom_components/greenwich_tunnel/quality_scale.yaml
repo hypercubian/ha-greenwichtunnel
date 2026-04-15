@@ -1,0 +1,53 @@
+rules:
+  action-setup:
+    status: exempt
+    comment: No service actions defined.
+  appropriate-polling:
+    status: done
+    comment: 5 minute poll interval for crowdsourced cloud data; well above the 60s cloud floor.
+  brands:
+    status: todo
+    comment: Brand icon still to be submitted to home-assistant/brands.
+  common-modules:
+    status: done
+    comment: Uses coordinator.py and entity.py shared modules.
+  config-flow:
+    status: done
+    comment: Single-step confirmation-only config flow.
+  config-flow-test-coverage:
+    status: done
+    comment: Tests cover form display, success, connection error, and duplicate aborts.
+  dependency-transparency:
+    status: todo
+    comment: API client lives inside the integration; extract to a PyPI package before HA Core submission.
+  docs-actions:
+    status: exempt
+    comment: No service actions defined.
+  docs-high-level-description:
+    status: todo
+    comment: To be submitted to the home-assistant.io docs repo when released.
+  docs-installation-instructions:
+    status: todo
+    comment: To be submitted to the home-assistant.io docs repo when released.
+  docs-removal-instructions:
+    status: todo
+    comment: To be submitted to the home-assistant.io docs repo when released.
+  entity-event-setup:
+    status: done
+    comment: All entities inherit from CoordinatorEntity.
+  entity-unique-id:
+    status: done
+  has-entity-name:
+    status: done
+  runtime-data:
+    status: done
+    comment: Uses typed ConfigEntry with runtime_data.
+  test-before-configure:
+    status: done
+    comment: Config flow probes the API with a 1-hour window before creating the entry.
+  test-before-setup:
+    status: done
+    comment: async_setup_entry raises ConfigEntryNotReady on first-refresh failure.
+  unique-config-entry:
+    status: done
+    comment: Fixed unique ID restricts the integration to a single instance.

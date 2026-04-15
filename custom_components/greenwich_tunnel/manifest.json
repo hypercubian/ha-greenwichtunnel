@@ -1,0 +1,14 @@
+{
+  "domain": "greenwich_tunnel",
+  "name": "Greenwich Foot Tunnel Lifts",
+  "codeowners": ["@hypercubian"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/hypercubian/ha-greenwichtunnel",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/hypercubian/ha-greenwichtunnel/issues",
+  "quality_scale": "bronze",
+  "requirements": [],
+  "version": "0.1.0"
+}

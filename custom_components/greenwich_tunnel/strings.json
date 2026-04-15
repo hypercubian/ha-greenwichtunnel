@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Greenwich Foot Tunnel Lifts",
+        "description": "Community-sourced lift status for the Greenwich Foot Tunnel, pulled from greenwichlifts.co.uk. No configuration is required — press Submit to add the integration."
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to reach greenwichlifts.co.uk. Please check your internet connection and try again."
+    },
+    "abort": {
+      "already_configured": "The Greenwich Foot Tunnel Lifts integration is already set up."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "north_lift": {
+        "name": "North lift (Island Gardens)"
+      },
+      "south_lift": {
+        "name": "South lift (Cutty Sark)"
+      }
+    }
+  }
+}
