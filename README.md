@@ -36,7 +36,7 @@
 ---
 
 <p align="center">
-  <img src="brand/tiles/greenwich_tunnel_tile_wb.svg" alt="Greenwich Foot Tunnel Lifts &mdash; sample tile showing North working, South out of service" width="640">
+  <img src="brand/tiles/greenwich_tunnel_tile_v8.svg" alt="Greenwich Foot Tunnel Lifts &mdash; sample tile showing North working, South out of service" width="640">
 </p>
 
 ## What it does
