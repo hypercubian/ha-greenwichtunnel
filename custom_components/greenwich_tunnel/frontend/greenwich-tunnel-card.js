@@ -10,7 +10,7 @@
  * by the integration and registered as an extra JS module at setup.
  */
 
-const CARD_VERSION = "0.2.5";
+const CARD_VERSION = "0.3.0";
 const CARD_TYPE = "greenwich-tunnel-card";
 const EDITOR_TYPE = "greenwich-tunnel-card-editor";
 
@@ -24,6 +24,7 @@ const DEFAULTS = {
   south_entrance: "Cutty Sark",
   working_text: "Working",
   broken_text: "Out of service",
+  stale_text: "Stale",
   // Show toggles: untick to hide that element from every panel.
   show_rotunda: true,
   show_pill: true,
@@ -71,6 +72,14 @@ const COLOURS = {
     "--pill-bg": "#F7C1C1",
     "--pill-dot": "#A32D2D",
     "--pill-text": "#501313",
+  },
+  // Pill-only overlay: applied on top of the last-known working/broken theme so
+  // the rotunda still reflects the most recent reading but the pill signals
+  // that the data is older than the staleness threshold.
+  stalePill: {
+    "--pill-bg": "#FDE68A",
+    "--pill-dot": "#A16207",
+    "--pill-text": "#78350F",
   },
 };
 
@@ -256,10 +265,12 @@ ha-card {
 `;
 
 /**
- * Return the CSS variable block for a state: "working" | "broken" | "unknown".
+ * Return the CSS variable block for a panel. Base theme comes from the last-known
+ * state ("working" | "broken"); the stale overlay then swaps only the pill vars.
  */
-function cssVarsFor(state) {
-  const theme = state === "on" ? COLOURS.working : COLOURS.broken;
+function cssVarsFor(state, { stale = false } = {}) {
+  const base = state === "on" ? COLOURS.working : COLOURS.broken;
+  const theme = stale ? { ...base, ...COLOURS.stalePill } : base;
   return Object.entries(theme)
     .map(([k, v]) => `${k}: ${v};`)
     .join(" ");
@@ -282,12 +293,12 @@ class GreenwichTunnelCard extends HTMLElement {
   }
 
   set hass(hass) {
-    const prevNorth = this._state(this._config && this._config.north_entity);
-    const prevSouth = this._state(this._config && this._config.south_entity);
+    const northId = this._config && this._config.north_entity;
+    const southId = this._config && this._config.south_entity;
+    const prev = this._panelKey(northId) + "|" + this._panelKey(southId);
     this._hass = hass;
-    const nextNorth = this._state(this._config && this._config.north_entity);
-    const nextSouth = this._state(this._config && this._config.south_entity);
-    if (!this.shadowRoot.firstChild || prevNorth !== nextNorth || prevSouth !== nextSouth) {
+    const next = this._panelKey(northId) + "|" + this._panelKey(southId);
+    if (!this.shadowRoot.firstChild || prev !== next) {
       this._render();
     }
   }
@@ -298,6 +309,17 @@ class GreenwichTunnelCard extends HTMLElement {
     return s ? s.state : null;
   }
 
+  _isStale(entityId) {
+    if (!this._hass || !entityId) return false;
+    const s = this._hass.states[entityId];
+    return !!(s && s.attributes && s.attributes.is_stale);
+  }
+
+  // Combined signature that triggers a re-render when state OR is_stale flips.
+  _panelKey(entityId) {
+    return `${this._state(entityId)}:${this._isStale(entityId) ? "1" : "0"}`;
+  }
+
   _panelHtml(side) {
     const cfg = this._config;
     const entity = side === "north" ? cfg.north_entity : cfg.south_entity;
@@ -306,10 +328,17 @@ class GreenwichTunnelCard extends HTMLElement {
     const state = this._state(entity);
     const working = state === "on";
     const unknown = state === null || state === "unavailable" || state === "unknown";
-    const vars = unknown ? "" : cssVarsFor(state);
+    const stale = !unknown && this._isStale(entity);
+    const vars = unknown ? "" : cssVarsFor(state, { stale });
     const classes = ["panel"];
     if (unknown) classes.push("unknown");
-    const pillText = unknown ? "Unknown" : working ? cfg.working_text : cfg.broken_text;
+    const pillText = unknown
+      ? "Unknown"
+      : stale
+        ? cfg.stale_text
+        : working
+          ? cfg.working_text
+          : cfg.broken_text;
     const elevator = working ? ELEVATOR_WORKING_SVG : ELEVATOR_BROKEN_SVG;
     const parts = [];
     if (cfg.show_rotunda) parts.push(ROTUNDA_SVG);
@@ -424,6 +453,7 @@ const EDITOR_SCHEMA = [
       { name: "broken_text", selector: { text: {} } },
     ],
   },
+  { name: "stale_text", selector: { text: {} } },
   {
     type: "grid",
     schema: [
@@ -530,6 +560,7 @@ const EDITOR_LABELS = {
   south_entrance: "South entrance name",
   working_text: "Working pill text",
   broken_text: "Out-of-service pill text",
+  stale_text: "Stale pill text",
   show_rotunda: "Show rotunda",
   show_pill: "Show pill",
   show_icon: "Show status icon",

@@ -79,6 +79,27 @@ def test_aggregate_marks_stale_when_latest_older_than_threshold() -> None:
     assert result.is_stale is True
 
 
+def test_aggregate_keeps_latest_status_when_all_reports_older_than_window() -> None:
+    """With no reports in the 24h availability window, status still reflects the latest."""
+    reports = [_report(LOCATION_NORTH, STATUS_FUNCTIONING, minutes_ago=60 * 48, report_id="old")]
+    result = _aggregate(LOCATION_NORTH, reports, NOW)
+    assert result.status == STATUS_FUNCTIONING
+    assert result.report_count_24h == 0
+    assert result.availability_pct_24h is None
+    assert result.is_stale is True
+
+
+def test_aggregate_availability_window_excludes_reports_outside_24h() -> None:
+    """Availability is computed only from reports within the last 24 hours."""
+    reports = [
+        _report(LOCATION_NORTH, STATUS_FUNCTIONING, minutes_ago=10),
+        _report(LOCATION_NORTH, STATUS_BROKEN, minutes_ago=60 * 48, report_id="ancient"),
+    ]
+    result = _aggregate(LOCATION_NORTH, reports, NOW)
+    assert result.report_count_24h == 1
+    assert result.availability_pct_24h == 100.0
+
+
 def test_aggregate_computes_availability_percentage() -> None:
     """Availability is the share of functioning reports across the window, rounded to 0.1."""
     reports = [

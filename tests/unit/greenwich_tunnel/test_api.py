@@ -46,7 +46,7 @@ async def test_get_recent_reports_parses_rows() -> None:
         client = GreenwichLiftsApiClient(session)
         with aioresponses() as mocked:
             mocked.get(REPORTS_URL_RE, payload=SAMPLE_ROWS)
-            reports = await client.async_get_recent_reports(hours=1)
+            reports = await client.async_get_recent_reports()
 
     assert len(reports) == 2
     assert all(isinstance(r, Report) for r in reports)
@@ -63,7 +63,7 @@ async def test_get_recent_reports_wraps_http_error() -> None:
         with aioresponses() as mocked:
             mocked.get(REPORTS_URL_RE, status=500)
             with pytest.raises(GreenwichLiftsApiError):
-                await client.async_get_recent_reports(hours=1)
+                await client.async_get_recent_reports()
 
 
 async def test_get_recent_reports_rejects_non_list_payload() -> None:
@@ -73,4 +73,4 @@ async def test_get_recent_reports_rejects_non_list_payload() -> None:
         with aioresponses() as mocked:
             mocked.get(REPORTS_URL_RE, payload={"error": "nope"})
             with pytest.raises(GreenwichLiftsApiError, match="Unexpected response"):
-                await client.async_get_recent_reports(hours=1)
+                await client.async_get_recent_reports()

@@ -82,11 +82,8 @@ class GreenwichTunnelLiftBinarySensor(GreenwichTunnelEntity, BinarySensorEntity)
 
     @property
     def available(self) -> bool:
-        """Report unavailable only when there are no reports in the 24-hour window."""
-        if not super().available:
-            return False
-        state = self._state
-        return state is not None and state.status is not None
+        """Rely on the coordinator's success: the last known status is kept even when stale."""
+        return super().available
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:

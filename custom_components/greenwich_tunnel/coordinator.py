@@ -13,6 +13,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .api import GreenwichLiftsApiClient, GreenwichLiftsApiError, Report
 from .const import (
+    AVAILABILITY_WINDOW_HOURS,
     DOMAIN,
     LOCATIONS,
     POLL_INTERVAL_SECONDS,
@@ -25,7 +26,7 @@ _LOGGER = logging.getLogger(__name__)
 
 @dataclass(frozen=True)
 class LocationState:
-    """Aggregated state for one lift location over the last 24 hours."""
+    """Aggregated state for one lift location based on the latest report and a 24h window."""
 
     status: str | None
     last_report_at: datetime | None
@@ -70,7 +71,7 @@ def _aggregate(
     all_reports: list[Report],
     now: datetime,
 ) -> LocationState:
-    """Reduce the recent report window into aggregate state for a single location."""
+    """Produce the latest status plus a 24h availability summary for one location."""
     reports = [r for r in all_reports if r.location == location]
     if not reports:
         return LocationState(
@@ -83,15 +84,21 @@ def _aggregate(
         )
 
     latest = max(reports, key=lambda r: r.created_at)
-    functioning = sum(1 for r in reports if r.status == STATUS_FUNCTIONING)
-    availability_pct = round(functioning / len(reports) * 100, 1)
     stale = (now - latest.created_at) > timedelta(hours=STALE_THRESHOLD_HOURS)
+
+    window_cutoff = now - timedelta(hours=AVAILABILITY_WINDOW_HOURS)
+    window_reports = [r for r in reports if r.created_at >= window_cutoff]
+    if window_reports:
+        functioning = sum(1 for r in window_reports if r.status == STATUS_FUNCTIONING)
+        availability_pct = round(functioning / len(window_reports) * 100, 1)
+    else:
+        availability_pct = None
 
     return LocationState(
         status=latest.status,
         last_report_at=latest.timestamp,
         last_report_created=latest.created_at,
-        report_count_24h=len(reports),
+        report_count_24h=len(window_reports),
         availability_pct_24h=availability_pct,
         is_stale=stale,
     )

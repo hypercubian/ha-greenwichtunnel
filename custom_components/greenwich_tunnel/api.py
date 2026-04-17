@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Any
 
 import aiohttp
 
-from .const import HISTORY_WINDOW_HOURS, REPORTS_ENDPOINT, SUPABASE_ANON_KEY
+from .const import REPORT_FETCH_LIMIT, REPORTS_ENDPOINT, SUPABASE_ANON_KEY
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -61,15 +61,13 @@ class GreenwichLiftsApiClient:
 
     async def async_get_recent_reports(
         self,
-        hours: int = HISTORY_WINDOW_HOURS,
+        limit: int = REPORT_FETCH_LIMIT,
     ) -> list[Report]:
-        """Return reports submitted in the last ``hours`` hours, newest first."""
-        cutoff = datetime.now(tz=timezone.utc) - timedelta(hours=hours)
+        """Return the most recent ``limit`` reports, newest first, regardless of age."""
         params = {
             "select": "id,location,status,timestamp,created_at",
-            "created_at": f"gte.{cutoff.isoformat()}",
             "order": "created_at.desc",
-            "limit": "1000",
+            "limit": str(limit),
         }
         headers = {
             "apikey": SUPABASE_ANON_KEY,
